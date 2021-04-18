@@ -1,0 +1,24 @@
+create or replace procedure emp_report 
+
+begin
+
+--employee data
+insert into sb.report_emp_temp
+select e.id, e.name, e.salary, d.name_department
+from dm.emp e
+join dm.dep d on e.id_dep = d.id;
+
+--sales data
+insert into sb.report_sales_temp
+select s.id_emp, count(id) cnt_sales
+from dm.sales s
+group by s.id_emp;
+
+/* join the tables together */ 
+
+insert into sb.report_final
+select e.*, s.cnt_sales
+from sb.report_emp_temp e
+left join sb.report_sales_temp s on s.id_emp = e.id;
+
+end;
